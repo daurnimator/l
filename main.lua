@@ -47,11 +47,16 @@ local function saveline(line)
 end
 
 local function msg_handler(e)
-	if type(e) ~= "string" then
-		if getmetatable(e).__tostring then
-			e = getmetatable(e).__tostring(e)
-			if type(e) == "string" then
-				return e
+	local t = type(e)
+	if t ~= "string" then
+		local mt = getmetatable(e)
+		if mt then
+			local tostring_mm = mt.__tostring
+			if tostring_mm then
+				local tostring_res = tostring_mm(e)
+				if type(tostring_res) == "string" then
+					return tostring_res
+				end
 			end
 		end
 		e = "(error object is a " .. type(e) .. " value)"
